@@ -88,11 +88,18 @@ function update() {
 }
 
 function draw() {
+	const pathThickness = 4;
+	const pathInnerWidth = pathWidth - pathThickness;
+	const pathInnerHeight = pathHeight - pathThickness;
+	const pathInnerX = g.calcOffSet(pathWidth, pathInnerWidth) + pathX;
+	const pathInnerY = g.calcOffSet(pathHeight, pathInnerHeight) + pathY;
+
 	r.BeginDrawing();
 
 	r.ClearBackground(r.BLACK);
 
 	r.DrawRectangle(pathX, pathY, pathWidth, pathHeight, r.WHITE);
+	r.DrawRectangle(pathInnerX, pathInnerY, pathInnerWidth, pathInnerHeight, r.BLACK);
 
 	const rotatingShapeX = pathX - rotatingShapeCenterX + rotatingShapePosX;
 	const rotatingShapeY = pathY - rotatingShapeCenterY + rotatingShapePosY;
