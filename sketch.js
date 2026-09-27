@@ -92,6 +92,8 @@ function draw() {
 
 	r.ClearBackground(r.BLACK);
 
+	r.DrawRectangle(pathX, pathY, pathWidth, pathHeight, r.WHITE);
+
 	const rotatingShapeX = pathX - rotatingShapeCenterX + rotatingShapePosX;
 	const rotatingShapeY = pathY - rotatingShapeCenterY + rotatingShapePosY;
 	r.DrawRectangle(rotatingShapeX, rotatingShapeY, rotatingShapeWidth, rotatingShapeHeight, r.RED);
