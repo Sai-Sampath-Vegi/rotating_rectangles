@@ -46,10 +46,14 @@ const pathTop = 0;
 
 const rotatingShapeSpeed = 2;
 
-let rotatingShapePosX = 0;
-let rotatingShapePosY = 0;
+let rotatingShapeOnePosX = 0;
+let rotatingShapeOnePosY = 0;
 
-let rotatingShapeSide = ABOVE_SIDE;
+let rotatingShapeTwoPosX = pathWidth;
+let rotatingShapeTwoPosY = 0;
+
+let rotatingShapeOneSide = ABOVE_SIDE;
+let rotatingShapeTwoSide = RIGHT_SIDE;
 
 function getShapeNextX(rotatingShapeCurrentPosX, pathLeft, pathWidth, rotatingShapeSide, rotatingShapeSpeed) {
 	let rotatingShapePosX = rotatingShapeCurrentPosX;
@@ -81,30 +85,50 @@ function getShapeNextSide(rotatingShapePosX, rotatingShapePosY, pathLeft, pathTo
 }
 
 function update() {
-	rotatingShapePosX = getShapeNextX(rotatingShapePosX, pathLeft, pathWidth, rotatingShapeSide, rotatingShapeSpeed);
-	rotatingShapePosY = getShapeNextY(rotatingShapePosY, pathTop, pathHeight, rotatingShapeSide, rotatingShapeSpeed);
+	rotatingShapeOnePosX = getShapeNextX(rotatingShapeOnePosX, pathLeft, pathWidth, rotatingShapeOneSide, rotatingShapeSpeed);
+	rotatingShapeOnePosY = getShapeNextY(rotatingShapeOnePosY, pathTop, pathHeight, rotatingShapeOneSide, rotatingShapeSpeed);
 
-	rotatingShapeSide = getShapeNextSide(rotatingShapePosX, rotatingShapePosY, pathLeft, pathTop, pathWidth, pathHeight, rotatingShapeSide);
+	rotatingShapeTwoPosX = getShapeNextX(rotatingShapeTwoPosX, pathLeft, pathWidth, rotatingShapeTwoSide, rotatingShapeSpeed);
+	rotatingShapeTwoPosY = getShapeNextY(rotatingShapeTwoPosY, pathTop, pathHeight, rotatingShapeTwoSide, rotatingShapeSpeed);
+
+	rotatingShapeOneSide = getShapeNextSide(rotatingShapeOnePosX, rotatingShapeOnePosY, pathLeft, pathTop, pathWidth, pathHeight, rotatingShapeOneSide);
+
+	rotatingShapeTwoSide = getShapeNextSide(rotatingShapeTwoPosX, rotatingShapeTwoPosY, pathLeft, pathTop, pathWidth, pathHeight, rotatingShapeTwoSide);
 }
 
-function draw() {
+function drawPath() {
 	const pathThickness = 4;
 	const pathInnerWidth = pathWidth - pathThickness;
 	const pathInnerHeight = pathHeight - pathThickness;
 	const pathInnerX = g.calcOffSet(pathWidth, pathInnerWidth) + pathX;
 	const pathInnerY = g.calcOffSet(pathHeight, pathInnerHeight) + pathY;
 
+	r.DrawRectangle(pathX, pathY, pathWidth, pathHeight, r.WHITE);
+	r.DrawRectangle(pathInnerX, pathInnerY, pathInnerWidth, pathInnerHeight, r.BLACK);
+}
+
+function drawRotatingShapes() {
+	const rotatingShapeOneX = pathX - rotatingShapeCenterX + rotatingShapeOnePosX;
+	const rotatingShapeOneY = pathY - rotatingShapeCenterY + rotatingShapeOnePosY;
+
+	const rotatingShapeTwoX = pathX - rotatingShapeCenterX + rotatingShapeTwoPosX;
+	const rotatingShapeTwoY = pathY - rotatingShapeCenterY + rotatingShapeTwoPosY;
+
+	r.DrawRectangle(rotatingShapeOneX, rotatingShapeOneY, rotatingShapeWidth, rotatingShapeHeight, r.RED);
+	r.DrawCircle(rotatingShapeOneX + rotatingShapeCenterX, rotatingShapeOneY + rotatingShapeCenterY, rotatingShapeWidth / 2, r.ORANGE);
+
+	r.DrawRectangle(rotatingShapeTwoX, rotatingShapeTwoY, rotatingShapeWidth, rotatingShapeHeight, r.ORANGE);
+	r.DrawCircle(rotatingShapeTwoX + rotatingShapeCenterX, rotatingShapeTwoY + rotatingShapeCenterY, rotatingShapeWidth / 2, r.YELLOW);
+}
+
+function draw() {
 	r.BeginDrawing();
 
 	r.ClearBackground(r.BLACK);
 
-	r.DrawRectangle(pathX, pathY, pathWidth, pathHeight, r.WHITE);
-	r.DrawRectangle(pathInnerX, pathInnerY, pathInnerWidth, pathInnerHeight, r.BLACK);
+	drawPath();
 
-	const rotatingShapeX = pathX - rotatingShapeCenterX + rotatingShapePosX;
-	const rotatingShapeY = pathY - rotatingShapeCenterY + rotatingShapePosY;
-	r.DrawRectangle(rotatingShapeX, rotatingShapeY, rotatingShapeWidth, rotatingShapeHeight, r.RED);
-	r.DrawCircle(rotatingShapeX + rotatingShapeCenterX, rotatingShapeY + rotatingShapeCenterY, rotatingShapeWidth / 2, r.GREEN);
+	drawRotatingShapes();
 
 	r.EndDrawing();
 }
