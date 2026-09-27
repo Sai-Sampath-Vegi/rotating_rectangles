@@ -36,6 +36,7 @@ const rotatingShapeHeight = getInt(rotatingShapeRelativeHeight * pathHeight);
 const rotatingShapeCenterX = getInt(getHalf(rotatingShapeWidth));
 const rotatingShapeCenterY = getInt(getHalf(rotatingShapeHeight))
 
+const NOT_STARTED = 0;
 const ABOVE_SIDE = 1;
 const RIGHT_SIDE = 2;
 const BELOW_SIDE = 3;
@@ -46,22 +47,28 @@ const pathTop = 0;
 
 const rotatingShapeSpeed = 2;
 
+const shapeTwoOrder = 1;
+const shapeThreeOrder = 2;
+const shapeFourOrder = 3;
+
 let rotatingShapeOnePosX = 0;
 let rotatingShapeOnePosY = 0;
 
-let rotatingShapeTwoPosX = pathWidth;
+let rotatingShapeTwoPosX = 0;
 let rotatingShapeTwoPosY = 0;
 
-let rotatingShapeThreePosX = pathWidth;
-let rotatingShapeThreePosY = pathHeight;
+let rotatingShapeThreePosX = 0;
+let rotatingShapeThreePosY = 0;
 
 let rotatingShapeFourPosX = 0;
-let rotatingShapeFourPosY = pathHeight;
+let rotatingShapeFourPosY = 0;
+
+let shapeCrossedCornersCount = 0;
 
 let rotatingShapeOneSide = ABOVE_SIDE;
-let rotatingShapeTwoSide = RIGHT_SIDE;
-let rotatingShapeThreeSide = BELOW_SIDE;
-let rotatingShapeFourSide = LEFT_SIDE;
+let rotatingShapeTwoSide = NOT_STARTED;
+let rotatingShapeThreeSide = NOT_STARTED;
+let rotatingShapeFourSide = NOT_STARTED;
 
 function getShapeNextX(rotatingShapeCurrentPosX, pathLeft, pathWidth, rotatingShapeSide, rotatingShapeSpeed) {
 	let rotatingShapePosX = rotatingShapeCurrentPosX;
@@ -81,18 +88,43 @@ function getShapeNextY(rotatingShapeCurrentPosY, pathTop, pathHeight, rotatingSh
 	return rotatingShapePosY;
 }
 
-function getShapeNextSide(rotatingShapePosX, rotatingShapePosY, pathLeft, pathTop, pathWidth, pathHeight, rotatingShapeCurrentSide) {
+function getShapeNextSide(rotatingShapePosX, rotatingShapePosY, pathLeft, pathTop, pathWidth, pathHeight, rotatingShapeCurrentSide, shouldIncreaseShapesCorners) {
 	let rotatingShapeSide = rotatingShapeCurrentSide;
+	let hasSideChanged = false;
 
-	if (rotatingShapePosX === pathWidth && rotatingShapeSide === ABOVE_SIDE) rotatingShapeSide = RIGHT_SIDE;
-	if (rotatingShapePosY === pathHeight && rotatingShapeSide === RIGHT_SIDE) rotatingShapeSide = BELOW_SIDE;
-	if (rotatingShapePosX === pathLeft && rotatingShapeSide === BELOW_SIDE) rotatingShapeSide = LEFT_SIDE;
-	if (rotatingShapePosY === pathTop && rotatingShapeSide === LEFT_SIDE) rotatingShapeSide = ABOVE_SIDE;
+	if (rotatingShapePosX === pathWidth && rotatingShapeSide === ABOVE_SIDE) {
+		rotatingShapeSide = RIGHT_SIDE;
+		hasSideChanged = true;
+	}
+	if (rotatingShapePosY === pathHeight && rotatingShapeSide === RIGHT_SIDE) {
+		rotatingShapeSide = BELOW_SIDE;
+		hasSideChanged = true;
+	}
+	if (rotatingShapePosX === pathLeft && rotatingShapeSide === BELOW_SIDE) {
+		rotatingShapeSide = LEFT_SIDE;
+		hasSideChanged = true;
+	}
+	if (rotatingShapePosY === pathTop && rotatingShapeSide === LEFT_SIDE) {
+		rotatingShapeSide = ABOVE_SIDE;
+		hasSideChanged = true;
+	}
+
+	if (hasSideChanged && shouldIncreaseShapesCorners) shapeCrossedCornersCount++;
 
 	return rotatingShapeSide;
 }
 
+function shouldStartNextShape(shapeCrossedCornersCount, cornersCount, currentShapeOrder) {
+	return (shapeCrossedCornersCount % cornersCount) === currentShapeOrder;
+}
+
+function startNextShape(shouldStartNextShape, shapeCurrentSide) {
+	return shouldStartNextShape ? ABOVE_SIDE : shapeCurrentSide;
+}
+
 function update() {
+	const cornersCount = 4;
+
 	rotatingShapeOnePosX = getShapeNextX(rotatingShapeOnePosX, pathLeft, pathWidth, rotatingShapeOneSide, rotatingShapeSpeed);
 	rotatingShapeOnePosY = getShapeNextY(rotatingShapeOnePosY, pathTop, pathHeight, rotatingShapeOneSide, rotatingShapeSpeed);
 
@@ -105,10 +137,14 @@ function update() {
 	rotatingShapeFourPosX = getShapeNextX(rotatingShapeFourPosX, pathLeft, pathWidth, rotatingShapeFourSide, rotatingShapeSpeed);
 	rotatingShapeFourPosY = getShapeNextY(rotatingShapeFourPosY, pathTop, pathHeight, rotatingShapeFourSide, rotatingShapeSpeed);
 
-	rotatingShapeOneSide = getShapeNextSide(rotatingShapeOnePosX, rotatingShapeOnePosY, pathLeft, pathTop, pathWidth, pathHeight, rotatingShapeOneSide);
-	rotatingShapeTwoSide = getShapeNextSide(rotatingShapeTwoPosX, rotatingShapeTwoPosY, pathLeft, pathTop, pathWidth, pathHeight, rotatingShapeTwoSide);
-	rotatingShapeThreeSide = getShapeNextSide(rotatingShapeThreePosX, rotatingShapeThreePosY, pathLeft, pathTop, pathWidth, pathHeight, rotatingShapeThreeSide);
-	rotatingShapeFourSide = getShapeNextSide(rotatingShapeFourPosX, rotatingShapeFourPosY, pathLeft, pathTop, pathWidth, pathHeight, rotatingShapeFourSide);
+	rotatingShapeTwoSide = startNextShape(shouldStartNextShape(shapeCrossedCornersCount, cornersCount, shapeTwoOrder), rotatingShapeTwoSide);
+	rotatingShapeThreeSide = startNextShape(shouldStartNextShape(shapeCrossedCornersCount, cornersCount, shapeThreeOrder), rotatingShapeThreeSide);
+	rotatingShapeFourSide = startNextShape(shouldStartNextShape(shapeCrossedCornersCount, cornersCount, shapeFourOrder), rotatingShapeFourSide);
+
+	rotatingShapeOneSide = getShapeNextSide(rotatingShapeOnePosX, rotatingShapeOnePosY, pathLeft, pathTop, pathWidth, pathHeight, rotatingShapeOneSide, true);
+	rotatingShapeTwoSide = getShapeNextSide(rotatingShapeTwoPosX, rotatingShapeTwoPosY, pathLeft, pathTop, pathWidth, pathHeight, rotatingShapeTwoSide, false);
+	rotatingShapeThreeSide = getShapeNextSide(rotatingShapeThreePosX, rotatingShapeThreePosY, pathLeft, pathTop, pathWidth, pathHeight, rotatingShapeThreeSide, false);
+	rotatingShapeFourSide = getShapeNextSide(rotatingShapeFourPosX, rotatingShapeFourPosY, pathLeft, pathTop, pathWidth, pathHeight, rotatingShapeFourSide, false);
 }
 
 function drawPath() {
