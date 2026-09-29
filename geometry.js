@@ -1,4 +1,4 @@
-function calcOffSet(outer, inner) {
+function calcOffset(outer, inner) {
 	return (outer - inner) / 2;
 }
 
@@ -15,6 +15,6 @@ function getDistance(x1, y1, x2, y2) {
 }
 
 module.exports = {
-	calcOffSet,
+	calcOffset,
 	getDistance,
 }

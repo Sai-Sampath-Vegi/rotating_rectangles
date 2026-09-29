@@ -27,8 +27,8 @@ const rotatingShapeRelativeHeight = 0.2;
 const pathWidth = getInt(pathRelativeWidth * windowWidth);
 const pathHeight = getInt(pathRelativeHeight * windowHeight);
 
-const pathX = getInt(g.calcOffSet(windowWidth, pathWidth));
-const pathY = getInt(g.calcOffSet(windowHeight, pathHeight));
+const pathX = getInt(g.calcOffset(windowWidth, pathWidth));
+const pathY = getInt(g.calcOffset(windowHeight, pathHeight));
 
 const rotatingShapeWidth = getInt(rotatingShapeRelativeWidth * pathWidth);
 const rotatingShapeHeight = getInt(rotatingShapeRelativeHeight * pathHeight);
@@ -151,8 +151,8 @@ function drawPath() {
 	const pathThickness = 4;
 	const pathInnerWidth = pathWidth - pathThickness;
 	const pathInnerHeight = pathHeight - pathThickness;
-	const pathInnerX = g.calcOffSet(pathWidth, pathInnerWidth) + pathX;
-	const pathInnerY = g.calcOffSet(pathHeight, pathInnerHeight) + pathY;
+	const pathInnerX = g.calcOffset(pathWidth, pathInnerWidth) + pathX;
+	const pathInnerY = g.calcOffset(pathHeight, pathInnerHeight) + pathY;
 
 	r.DrawRectangle(pathX, pathY, pathWidth, pathHeight, r.WHITE);
 	r.DrawRectangle(pathInnerX, pathInnerY, pathInnerWidth, pathInnerHeight, r.BLACK);
